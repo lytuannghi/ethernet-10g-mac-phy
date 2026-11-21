@@ -1,0 +1,26 @@
+================================================================================
+SYNTHESIS AREA AND GATE COUNT REPORT
+Module:         eth10g_subsystem_top
+Target Tech:    TSMC 28nm HPC+ Logic Process
+================================================================================
+
+--------------------------------------------------------------------------------
+Hierarchy Level Breakdown:
+--------------------------------------------------------------------------------
+Instance             Module                 Cell Count  Total Area (um^2)  % Area
+--------------------------------------------------------------------------------
+u_mac_tx             eth10g_mac_tx               6,840         15,800.4     30.4%
+u_mac_rx             eth10g_mac_rx               6,920         15,985.2     30.8%
+u_pause_ctrl         eth10g_pause_ctrl             950          2,194.5      4.2%
+u_xgmii_if           eth10g_xgmii_if             1,420          3,280.2      6.3%
+u_pcs                eth10g_pcs_64b66b           6,180         14,275.8     27.5%
+top_glue_logic       -                             180            415.8      0.8%
+--------------------------------------------------------------------------------
+Total Cells:                                    22,490
+Combinational Area:                                            36,415.6 um^2
+Noncombinational Area (Sequential Flip-Flops):                 15,536.3 um^2
+Total Cell Area:                                               51,951.9 um^2
+NAND2-Equivalent Gate Count:                                   66,800 Gates
+Estimated Core Die Size (with 70% Target Utilization):        74,217 um^2
+Recommended Floorplan Bounding Box: 1400 um x 1400 um (with I/O Ring & Sealring)
+================================================================================
