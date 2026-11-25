@@ -1,0 +1,25 @@
+================================================================================
+RTL SYNTHESIS READINESS & CONSTRAINT REPORT: ethernet-10g-mac-phy
+Method : Static Verilog/SV Structural Parser + SDC Constraint Audit
+Note   : Foundry Gate-Level Netlist & STA require PDK Liberty (.lib) + Synopsys/OpenROAD
+================================================================================
+RTL Source Files Inspected : 7
+Code Lines (Non-Comment)   : 635
+Sequential Blocks          : 8
+Combinational Blocks       : 0
+Declared reg/logic Signals : 59
+
+MODULE BREAKDOWN:
+  rtl\eth10g_subsystem_top.v                    | modules=eth10g_subsystem_top         | loc= 110 | seq= 0 | comb= 0
+  rtl\flow\eth10g_pause_ctrl.v                  | modules=eth10g_pause_ctrl            | loc=  57 | seq= 2 | comb= 0
+  rtl\mac\eth10g_crc32.v                        | modules=eth10g_crc32                 | loc=  53 | seq= 1 | comb= 0
+  rtl\mac\eth10g_mac_rx.v                       | modules=eth10g_mac_rx                | loc= 107 | seq= 1 | comb= 0
+  rtl\mac\eth10g_mac_tx.v                       | modules=eth10g_mac_tx                | loc= 156 | seq= 1 | comb= 0
+  rtl\pcs\eth10g_pcs_64b66b.v                   | modules=eth10g_pcs_64b66b            | loc= 110 | seq= 2 | comb= 0
+  rtl\xgmii\eth10g_xgmii_if.v                   | modules=eth10g_xgmii_if              | loc=  42 | seq= 1 | comb= 0
+
+SDC CLOCK CONSTRAINTS:
+  eth10g_timing.sdc: port=clk | period=6.40 ns | target=156.25 MHz
+
+ARITHMETIC DIVISION/MODULO CHECK: CLEAN (0 combinational / or % operators)
+================================================================================

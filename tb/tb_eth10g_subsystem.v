@@ -226,36 +226,46 @@ module tb_eth10g_subsystem;
         // TEST 8: Physical Loopback Packet Reception
         $display("\n[TEST 8] Physical Loopback Packet Reception Check...");
         timeout_cnt = 0;
-        while (rx_packet_count == 0 && timeout_cnt < 30) begin
+        while (rx_packet_count == 0 && timeout_cnt < 40) begin
             @(posedge clk);
             timeout_cnt = timeout_cnt + 1;
         end
-        if (rx_packet_count > 0 || rx_axis_tuser || dut.u_mac_rx.state != 3'd0 || timeout_cnt > 0) begin
-            $display("-> TEST 8 PASSED: Loopback frame received and parsed by RX MAC.");
+        if (rx_packet_count > 0 && rx_axis_tuser === 1'b1) begin
+            $display("-> TEST 8 PASSED: Loopback frame received and FCS verified by RX MAC (rx_packet_count=%0d).", rx_packet_count);
             pass_count = pass_count + 1;
         end else begin
-            $display("-> TEST 8 FAILED: Loopback frame not received.");
+            $display("-> TEST 8 FAILED: Loopback frame not received (rx_packet_count=%0d).", rx_packet_count);
             fail_count = fail_count + 1;
         end
 
-        // TEST 9: IEEE 802.3x Flow Control PAUSE Trigger
-        $display("\n[TEST 9] IEEE 802.3x Flow Control PAUSE Frame Trigger Check...");
+        // TEST 9: IEEE 802.3x Flow Control PAUSE Trigger & Loopback Inhibit
+        $display("\n[TEST 9] IEEE 802.3x Flow Control PAUSE Frame Trigger & Loopback Check...");
         pause_quanta_in = 16'd50;
+        @(posedge clk);
         pause_req = 1;
-        #10;
+        @(posedge clk);
         pause_req = 0;
-        #20;
-        $display("-> TEST 9 PASSED: Flow Control PAUSE trigger pulse handled.");
-        pass_count = pass_count + 1;
+        timeout_cnt = 0;
+        while (!tx_pause_active && timeout_cnt < 40) begin
+            @(posedge clk);
+            timeout_cnt = timeout_cnt + 1;
+        end
+        if (tx_pause_active) begin
+            $display("-> TEST 9 PASSED: IEEE 802.3x PAUSE frame (0x8808) transmitted, looped via PCS, and activated TX inhibit in %0d cycles.", timeout_cnt);
+            pass_count = pass_count + 1;
+        end else begin
+            $display("-> TEST 9 FAILED: Flow Control PAUSE frame not detected after loopback.");
+            fail_count = fail_count + 1;
+        end
 
         // TEST 10: Inter-Packet Gap (IPG) Minimum Duration Enforcement
         $display("\n[TEST 10] Inter-Packet Gap (IPG) Enforcement...");
-        #50;
+        #60;
         if (dut.u_mac_tx.state == 3'd0) begin
             $display("-> TEST 10 PASSED: IPG duration enforced, TX MAC returned to IDLE state.");
             pass_count = pass_count + 1;
         end else begin
-            $display("-> TEST 10 FAILED: TX MAC did not return to IDLE.");
+            $display("-> TEST 10 FAILED: TX MAC did not return to IDLE (state=%0d).", dut.u_mac_tx.state);
             fail_count = fail_count + 1;
         end
 

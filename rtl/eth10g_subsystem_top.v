@@ -62,6 +62,11 @@ module eth10g_subsystem_top (
     // Pause Control Signals
     wire        rx_pause_valid;
     wire [15:0] rx_pause_quanta;
+    wire        send_pause_frame;
+    wire [47:0] pause_dest_mac;
+    wire [15:0] pause_opcode;
+    wire [15:0] pause_quanta_out;
+    wire        pause_frame_done;
 
     // Flow Control Block
     eth10g_pause_ctrl u_pause_ctrl (
@@ -70,11 +75,11 @@ module eth10g_subsystem_top (
         .pause_req        (pause_req),
         .pause_quanta_in  (pause_quanta_in),
         .tx_pause_active  (tx_pause_active),
-        .send_pause_frame (),
-        .pause_dest_mac   (),
-        .pause_opcode     (),
-        .pause_quanta_out (),
-        .pause_frame_done (1'b0),
+        .send_pause_frame (send_pause_frame),
+        .pause_dest_mac   (pause_dest_mac),
+        .pause_opcode     (pause_opcode),
+        .pause_quanta_out (pause_quanta_out),
+        .pause_frame_done (pause_frame_done),
         .rx_pause_valid   (rx_pause_valid),
         .rx_pause_quanta  (rx_pause_quanta)
     );
@@ -89,6 +94,11 @@ module eth10g_subsystem_top (
         .tx_axis_tlast    (tx_axis_tlast),
         .tx_axis_tready   (tx_axis_tready),
         .tx_pause_inhibit (tx_pause_active),
+        .send_pause_frame (send_pause_frame),
+        .pause_dest_mac   (pause_dest_mac),
+        .pause_opcode     (pause_opcode),
+        .pause_quanta     (pause_quanta_out),
+        .pause_frame_done (pause_frame_done),
         .xgmii_txd        (mac_tx_data),
         .xgmii_txc        (mac_tx_ctrl)
     );

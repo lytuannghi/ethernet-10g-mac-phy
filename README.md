@@ -2,7 +2,7 @@
 
 A production-grade, synthesizable silicon intellectual property (IP) core implementing the 10 Gigabit Ethernet MAC subsystem and 10GBASE-R Physical Coding Sublayer (PCS) conforming to the IEEE 802.3ae standard and IEEE 802.3 Clause 49. Features an IEEE 802.3x PAUSE / Priority-Based Flow Control (PFC) engine, full-speed 64-bit parallel CRC-32 Frame Check Sequence (FCS) calculation, XGMII framing, and a 64b/66b block encoder/decoder with self-synchronizing PRBS-58 scrambling.
 
-Synthesized and validated for the TSMC 28nm HPC+ CMOS logic process at the standard IEEE 802.3ae line rate frequency of 156.25 MHz.
+Designed and constrained in Verilog-2005 with SkyWater 130nm SDC & GDSII logic process at the standard IEEE 802.3ae line rate frequency of 156.25 MHz.
 
 ---
 
@@ -79,17 +79,12 @@ Synthesized and validated for the TSMC 28nm HPC+ CMOS logic process at the stand
 
 | Parameter | Specification | Notes |
 | :--- | :--- | :--- |
-| Technology Node | TSMC 28nm HPC+ CMOS | 1P9M Standard Logic Stack |
-| Nominal Supply Voltage | 0.90 V | Typical Core Supply |
-| Operating Frequency | 156.25 MHz | Worst-case SS corner (0.9V, 125 C) |
-| Max Attainable Frequency | 238.4 MHz | Calculated from STA slack |
-| Total Gate Count | 66,800 Gates | Two-input NAND equivalent |
-| Total Cell Area | 51,952 um^2 | Standard cell footprint |
-| Core Die Area | 1400 um x 1400 um | Includes I/O Padring & ESD Sealring |
-| Setup Timing Slack | +2.046 ns | Fully closed without timing violations |
-| Hold Timing Slack | +0.018 ns | No min-delay race conditions |
-| DRC Status | 0 Violations | Clean against 28nm rule decks |
-| LVS Status | 100% Match | Netlist to layout correspondence |
+| Target Technology | SkyWater 130nm HD | Open-source PDK geometry (5-metal layer stack) |
+| Operating Frequency | 156.25 MHz | SDC clock period constraint (`syn/`) |
+| RTL Structural Metrics | Verified via `syn/analyze_rtl.py` | See `syn/reports/rtl_synthesis_check.txt` |
+| Core Die Area | 360 um x 360 um | Includes I/O Padring & ESD Sealring |
+| DRC Status | 0 Violations | 0 violations via `verify_gds_drc.py` (Sky130 rules) |
+| LVS / Port Check | Structural Match | GDSII & RTL ports audited (`layout/reports/lvs_report.txt`); external Magic/Netgen needed for SPICE LVS |
 
 ---
 
@@ -180,7 +175,7 @@ To rebuild the physical layout:
 python layout/scripts/build_layout_eth10g.py
 ```
 
-Output layout file is placed in `layout/gds/eth10g_subsystem_top.gds` ($1400\,\mu\text{m} \times 1400\,\mu\text{m}$).
+Output layout file is placed in `layout/gds/eth10g_subsystem_top.gds` (360 um x 360 um).
 
 ---
 

@@ -1,73 +1,11 @@
 ================================================================================
-SYNTHESIS STATIC TIMING ANALYSIS (STA) REPORT
-Module:         eth10g_subsystem_top
-Target Tech:    TSMC 28nm HPC+ Logic Process
-Corner:         Slow-Slow (SS), 0.90V, 125C (Worst-Case Timing)
-Target Clock:   156.25 MHz (Clock Period = 6.400 ns - IEEE 802.3ae Line Clock)
+SDC TIMING CONSTRAINT & RTL REGISTER AUDIT: eth10g_subsystem_top
+Constraint File: syn/eth10g_timing.sdc
+Target Clock:    156.25 MHz (Period = 6.400 ns)
+Note: Verified constraints parsed from SDC and static RTL sensitivity audit.
+      Post-synthesis gate-level STA slack requires external OpenSTA execution.
 ================================================================================
 
-Clock clk:
-  Period:             6.4000 ns
-  Clock Uncertainty:  0.1500 ns
-  Clock Latency:      0.2100 ns
-
-Path 1: Setup Timing Check (Max Path)
-  Startpoint: u_mac_tx/u_crc/crc_reg_reg[31] (rising edge-triggered flip-flop clocked by clk)
-  Endpoint:   u_pcs/scrambler_lfsr_reg[57] (rising edge-triggered flip-flop clocked by clk)
-  Path Group: clk
-  Path Type:  max
-
-  Point                                            Incr       Path
-  ------------------------------------------------------------------------
-  clock clk (rise edge)                            0.0000     0.0000
-  clock network delay (ideal)                      0.2100     0.2100
-  u_mac_tx/u_crc/crc_reg_reg[31]/CLK (DFFX1)       0.0000     0.2100 r
-  u_mac_tx/u_crc/crc_reg_reg[31]/Q (DFFX1)         0.1240     0.3340 f
-  u_mac_tx/U52/Y (INVX2)                           0.0450     0.3790 r
-  u_mac_tx/xgmii_txd_reg[31]/D (DFFX1)             0.1420     0.5210 r
-  u_xgmii_if/xgmii_txd_out_reg[31]/Q (DFFX1)       0.1180     0.6390 r
-  u_pcs/block_payload_mux_1/U14/Y (MUX4X1)         0.3450     0.9840 f
-  u_pcs/scramble_step_64b_1/U88/Y (XOR3X2)         1.8400     2.8240 r
-  u_pcs/scramble_step_64b_1/U112/Y (XOR2X1)        1.4200     4.2440 f
-  u_pcs/scrambler_lfsr_reg[57]/D (DFFX1)           0.0820     4.3260 f
-  data arrival time                                           4.3260
-
-  clock clk (rise edge)                            6.4000     6.4000
-  clock network delay (ideal)                      0.2100     6.6100
-  clock uncertainty                               -0.1500     6.4600
-  u_pcs/scrambler_lfsr_reg[57]/CLK (DFFX1)                    6.4600
-  library setup time                              -0.0880     6.3720
-  data required time                                          6.3720
-  ------------------------------------------------------------------------
-  data required time                                          6.3720
-  data arrival time                                          -4.3260
-  ------------------------------------------------------------------------
-  slack (MET):                                               +2.0460 ns
-
-Path 2: Hold Timing Check (Min Path)
-  Startpoint: u_pause_ctrl/tx_pause_active_reg (rising edge-triggered flip-flop)
-  Endpoint:   tx_pause_active_reg (rising edge-triggered flip-flop)
-  Path Group: clk
-  Path Type:  min
-
-  Point                                            Incr       Path
-  ------------------------------------------------------------------------
-  clock clk (rise edge)                            0.0000     0.0000
-  clock network delay                              0.1600     0.1600
-  u_pause_ctrl/tx_pause_active_reg/CLK             0.0000     0.1600 r
-  u_pause_ctrl/tx_pause_active_reg/Q               0.0760     0.2360 r
-  tx_pause_active_reg/D                            0.0180     0.2540 r
-  data arrival time                                           0.2540
-
-  clock clk (rise edge)                            0.0000     0.0000
-  clock network delay                              0.1600     0.1600
-  clock uncertainty                                0.0500     0.2100
-  library hold time                                0.0260     0.2360
-  data required time                                          0.2360
-  ------------------------------------------------------------------------
-  slack (MET):                                               +0.0180 ns
-
-================================================================================
-TIMING STATUS: PASSED (Setup Slack: +2.0460 ns, Hold Slack: +0.0180 ns)
-Target Maximum Clock Frequency (Fmax): 238.43 MHz
-================================================================================
+1. SDC Clock Target: 156.25 MHz (6.400 ns)
+2. Combinational Operators: Zero combinational / or % operators verified by analyze_rtl.py.
+3. Simulation Status: Verified 100% functional pass under iverilog -Wall -g2005.

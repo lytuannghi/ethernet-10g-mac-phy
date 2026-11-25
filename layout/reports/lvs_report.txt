@@ -1,39 +1,10 @@
 ================================================================================
-CALIBRE LVS (LAYOUT VERSUS SCHEMATIC) REPORT
-Design Name:     eth10g_subsystem_top
-Schematic:       syn/netlist/eth10g_subsystem_top_syn.v
-Layout:          layout/gds/eth10g_subsystem_top.gds
-Technology:      TSMC 28nm HPC+
-Date:            November 2026
+PHYSICAL GEOMETRY & TOP-LEVEL PORT AUDIT: eth10g_subsystem_top
+Process Node: SkyWater 130nm (DB Unit: 1 nm)
+Layout File:  layout/gds/eth10g_subsystem_top.gds
 ================================================================================
 
---- CIRCUIT EXTRACTION & COMPARISON SUMMARY ---
-LAYOUT ELEMENTS:
-  Total Instances Extracted:   22,490
-  Total Nets Extracted:        23,124
-  Total Ports Extracted:           64
-
-SCHEMATIC ELEMENTS:
-  Total Instances in Netlist:  22,490
-  Total Nets in Netlist:       23,124
-  Total Ports in Netlist:          64
-
---- MATCHING DETAILS ---
-  Instances matched:           22,490 / 22,490 (100.0%)
-  Nets matched:                23,124 / 23,124 (100.0%)
-  Ports matched:                   64 /     64 (100.0%)
-
-  Unmatched Layout Instances:     0
-  Unmatched Schematic Instances:  0
-  Unmatched Layout Nets:          0
-  Unmatched Schematic Nets:       0
-
---- ERC (ELECTRICAL RULE CHECK) ---
-  Short circuits detected:     0
-  Open circuits detected:      0
-  Floating gates detected:     0
-
-================================================================================
-FINAL LVS STATUS: 100% MATCH - CLEAN
-LVS VERIFICATION PASSED SUCCESSFULLY
-================================================================================
+GDSII Geometry Check (verify_gds_drc.py): 0 geometric DRC violations (verified polygons)
+Top-Level RTL Module: eth10g_subsystem_top
+Note: Geometric DRC verified across SkyWater 130nm layers (NWELL/DIFF/POLY/CONT/M1..M5/VIA4/PAD).
+      Transistor-level schematic extraction (SPICE vs Netgen) requires Magic/Netgen.

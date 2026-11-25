@@ -2,7 +2,7 @@
 # File: eth10g_timing.sdc
 # Module: eth10g_subsystem_top
 # Target Frequency: 156.25 MHz (6.400 ns Period - IEEE 802.3ae Standard Line Clock)
-# Technology: TSMC 28nm HPC+ Standard Cell Library (typical 0.9V, 25C)
+# Technology: SkyWater 130nm HD Standard Cell Library (typical 1.80V, 25C)
 ###############################################################################
 
 # Primary Core Line Clock Definition

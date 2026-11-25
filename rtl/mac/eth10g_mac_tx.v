@@ -22,8 +22,13 @@ module eth10g_mac_tx (
     input  wire        tx_axis_tlast,
     output reg         tx_axis_tready,
 
-    // Flow Control Inhibit from Pause Controller
+    // Flow Control Inhibit & PAUSE Frame Generation Interface
     input  wire        tx_pause_inhibit,
+    input  wire        send_pause_frame,
+    input  wire [47:0] pause_dest_mac,
+    input  wire [15:0] pause_opcode,
+    input  wire [15:0] pause_quanta,
+    output reg         pause_frame_done,
 
     // XGMII Physical Interface to PCS
     output reg  [63:0] xgmii_txd,
@@ -43,8 +48,9 @@ module eth10g_mac_tx (
     localparam S_PREAMBLE = 3'd1;
     localparam S_PAYLOAD  = 3'd2;
     localparam S_FCS      = 3'd3;
-    localparam S_TERM     = 3'd4;
+    localparam S_PAUSE_1  = 3'd4;
     localparam S_IPG      = 3'd5;
+    localparam S_PAUSE_2  = 3'd6;
 
     reg [2:0] state;
     reg [1:0] ipg_counter;
@@ -71,20 +77,22 @@ module eth10g_mac_tx (
 
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            state          <= S_IDLE;
-            tx_axis_tready <= 1'b0;
-            xgmii_txd      <= {8{C_IDLE}};
-            xgmii_txc      <= 8'hFF; // All 8 bytes are control Idle
-            crc_init       <= 1'b1;
-            crc_en         <= 1'b0;
-            crc_data       <= 64'd0;
-            crc_keep       <= 8'd0;
-            ipg_counter    <= 2'd0;
-            last_tdata     <= 64'd0;
-            last_tkeep     <= 8'd0;
+            state            <= S_IDLE;
+            tx_axis_tready   <= 1'b0;
+            xgmii_txd        <= {8{C_IDLE}};
+            xgmii_txc        <= 8'hFF; // All 8 bytes are control Idle
+            crc_init         <= 1'b1;
+            crc_en           <= 1'b0;
+            crc_data         <= 64'd0;
+            crc_keep         <= 8'd0;
+            ipg_counter      <= 2'd0;
+            last_tdata       <= 64'd0;
+            last_tkeep       <= 8'd0;
+            pause_frame_done <= 1'b0;
         end else begin
-            crc_init <= 1'b0;
-            crc_en   <= 1'b0;
+            crc_init         <= 1'b0;
+            crc_en           <= 1'b0;
+            pause_frame_done <= 1'b0;
 
             case (state)
                 S_IDLE: begin
@@ -97,9 +105,37 @@ module eth10g_mac_tx (
                         crc_init       <= 1'b1;
                         tx_axis_tready <= 1'b1;
                         state          <= S_PREAMBLE;
+                    end else if (send_pause_frame) begin
+                        // Transmit IEEE 802.3x PAUSE /S/ + Preamble
+                        xgmii_txd      <= {56'h55555555555555, C_START};
+                        xgmii_txc      <= 8'h01;
+                        crc_init       <= 1'b1;
+                        tx_axis_tready <= 1'b0;
+                        state          <= S_PAUSE_1;
                     end else begin
                         tx_axis_tready <= 1'b0;
                     end
+                end
+
+                S_PAUSE_1: begin
+                    // SFD (0xD5) + 6-byte Reserved Multicast MAC (01:80:C2:00:00:01) + Src MAC byte 0
+                    xgmii_txd <= {8'h00, pause_dest_mac, 8'hD5};
+                    xgmii_txc <= 8'h00;
+                    crc_en    <= 1'b1;
+                    crc_data  <= {8'h00, pause_dest_mac, 8'hD5};
+                    crc_keep  <= 8'hFF;
+                    state     <= S_PAUSE_2;
+                end
+
+                S_PAUSE_2: begin
+                    // EtherType 0x8808 at [31:16], Opcode 0x0001 at [47:32], Pause Quanta at [63:48]
+                    xgmii_txd        <= {pause_quanta, pause_opcode, 16'h8808, 16'h0000};
+                    xgmii_txc        <= 8'h00;
+                    crc_en           <= 1'b1;
+                    crc_data         <= {pause_quanta, pause_opcode, 16'h8808, 16'h0000};
+                    crc_keep         <= 8'hFF;
+                    pause_frame_done <= 1'b1;
+                    state            <= S_FCS;
                 end
 
                 S_PREAMBLE: begin
